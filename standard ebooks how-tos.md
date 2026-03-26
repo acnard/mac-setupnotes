@@ -6,7 +6,7 @@
 
 ### **Typora**:
 
- for my own notes, installed typora and activated my license: the license code is in my quaderno di labors.
+ for my own notes, installed typora and activated my license: the license code is in my quaderno di lavoro.
 
 ### **Xcode**: 
 
