@@ -166,11 +166,32 @@ Then, when after git push, when prompted for my credentials entered acnard for u
 This is assuming you have a repo whose origin is a remote on github and you have cloned it to the local machine using https. 
 
 1. On your local machine, always do a **git fetch** first to retrieve any changes from the remote (especially if you work on the same repo from multiple computers)
+
 2. Then work on the files in your local folder (in this case, mac-setupnotes), updating or adding files as needed. 
+
 3. When you do a **git status** you will be shown the non-commited changes you have made.
    ![image-20260326134759051](image-20260326134759051.png)
-4. Use git add -A to add all chanced or new files to the staging area
-    
+
+4. Use **git add -A t**o add all chanced or new files to the staging area. Then with **git status** you will see that all those files are staged for the next commit. 
+
+   ![image-20260326135054583](image-20260326135054583.png)
+
+5. Now you can do **git commit** **-m "enter message here"** to commit those changes (You need the -m option if you have not set up a default editor). ![](image-20260326135401862.png)
+
+6. Finally, do a git push to publish those changes to the remote. 
+
+   NOTE: The second time I did this, at least in the same terminal window, I didn't have to re-paste my github token.
+
+Now suppose you do a change directly on github: 
+1. You edit the file on github and then do the commit there. <img src="image-20260326135845610.png" alt="image-20260326135845610" style="zoom:33%;" />
+2. Then notice that, on local machine, if you do git status **it won't notice about the change done in the origin**. Right now it's only showing the non-commited changes I've done on the local machine. But it says the commits are up to date: 
+   ![image-20260326140023245](image-20260326140023245.png)
+3. This is because you need to first to a **git fetch**. If you do that, then git status will tell you the correct situation. Basically, there is on commited change on the origin, and I need to do a git pull to update my local branch with those same changes. 
+   ![image-20260326140142975](image-20260326140142975.png)
+4. But if I try to do a git pull now, it warns me that the git pull would be overwritten by my local changes to the same .md file. ![image-20260326140518442](image-20260326140518442.png)
+5. 
+
+
 
 ## Test run for the Grey Mask
 
