@@ -6,7 +6,7 @@
 
 ### **Typora**:
 
- for my own notes, installed typora and activated my license: nardella.anna@gmail.com GS82EQ-RZVDCY-NNZCYV-3XP9MR
+ for my own notes, installed typora and activated my license: the license code is in my quaderno di labors.
 
 ### **Xcode**: 
 
@@ -128,6 +128,49 @@ after doing this, I can cd into the newly created subfolder (called mac-setupnot
 Now I have been working on the old setup notes folder where I have been taking notes. I need to move those changes (updated .md file plus new images) to the mac-setupnotes folder that is under version control, after which  I can delete my initial setupnotes folder. 
 
 Then I can do a `git add -A` followed by a `git commit` and a `git push`.
+
+![Screenshot 2026-03-26 at 13.00.59](Screenshot 2026-03-26 at 13.00.59.png)
+
+![Screenshot 2026-03-26 at 13.01.34](Screenshot 2026-03-26 at 13.01.34.png)
+
+I was able to do the commit using the -m option to enter the commit message directly in the terminal: 
+
+![image-20260326131231564](image-20260326131231564.png)
+
+but then the git push failed. It asked me for my github user name and pw but then said that :
+
+> remote: Invalid username or token. Password authentication is not supported for Git operations.fatal: Authentication failed for 'https://github.com/acnard/mac-setupnotes.git/'
+
+### create a token on github 
+
+You can no longer use your username and pw to do a git push from local to remote. Instead, you need to generate a token on github and then, when prompted for your pw on git push paste in that token. Note that the token has an expiration date.
+
+Following the instructions here:
+
+<img src="image-20260326133438325.png" alt="image-20260326133438325" style="zoom:33%;" />
+
+I created a personal access token in GitHub
+
+![image-20260326133417517](image-20260326133417517.png)
+
+And then copied it to a file on my local machine (you can't access this token again on github).
+
+### do a git push to remote using the token
+
+Then, when after git push, when prompted for my credentials entered acnard for username and then pasted in the token for the password (CAREFUL: do command-V only once, it doesn't show you anything in the command line when you paste). 
+
+![image-20260326133822226](image-20260326133822226.png)
+
+## Summary of git process (command line)
+
+This is assuming you have a repo whose origin is a remote on github and you have cloned it to the local machine using https. 
+
+1. On your local machine, always do a **git fetch** first to retrieve any changes from the remote (especially if you work on the same repo from multiple computers)
+2. Then work on the files in your local folder (in this case, mac-setupnotes), updating or adding files as needed. 
+3. When you do a **git status** you will be shown the non-commited changes you have made.
+   ![image-20260326134759051](image-20260326134759051.png)
+4. Use git add -A to add all chanced or new files to the staging area
+    
 
 ## Test run for the Grey Mask
 
