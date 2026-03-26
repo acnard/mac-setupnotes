@@ -81,19 +81,53 @@ I didn't accept the defaults offered (the github account name and email address)
 
 <img src="image-20260326121022874.png" alt="image-20260326121022874" style="zoom:33%;" />
 
-### Testing with a new repository (mac-setupnotes)
+## new repository for testing
+
+I will do this on the command line, not using github desktop, to review my knowledge.
+
+### Create new repo on GitHub
 
 over on GitHub I created a new repository called mac-setupnotes for holding the text in this file. 
 
 ![image-20260326122148679](image-20260326122148679.png)
 
+### upload files to github and do inital commit
+
 Now I want to populate this repo with the contents of my SetupNotes folder on the mac
 
 <img src="image-20260326122347601.png" alt="image-20260326122347601" style="zoom: 33%;" />
 
-I decided to do this in the only way I know how, meaning I first upload my files (so this .md file plus its images) to the repository on GitHub.
+I decided to do this in the only way I know how, meaning I first upload my files (so this .md file plus its images) to the repository on GitHub. So I uploaded all the files in my SetupNotes folder and made an initial commit (directly on github)
 
+![image-20260326123249183](image-20260326123249183.png)
 
+### now clone the github repo to local machine
+
+Now I can use a git command to clone this repo to my local machine. 
+
+So to do this, I need to cd into the folder where I want the repo to be cloned and then use the git clone command. In my case: 
+
+![image-20260326124042995](image-20260326124042995.png)
+
+So to do this I cd into the folder I want to use (MyNotes)
+
+and then enter the command `git clone https://github.com/acnard/mac-setupnotes.git`
+
+where the https address is obtained from github.
+
+![image-20260326124331834](image-20260326124331834.png)
+
+![image-20260326124448072](image-20260326124448072.png)
+
+after doing this, I can cd into the newly created subfolder (called mac-setupnotes) and do a git status: it tells me I am up to date with origin.
+
+![image-20260326124903112](image-20260326124903112.png)
+
+### update the files on local machine
+
+Now I have been working on the old setup notes folder where I have been taking notes. I need to move those changes (updated .md file plus new images) to the mac-setupnotes folder that is under version control, after which  I can delete my initial setupnotes folder. 
+
+Then I can do a `git add -A` followed by a `git commit` and a `git push`.
 
 ## Test run for the Grey Mask
 
