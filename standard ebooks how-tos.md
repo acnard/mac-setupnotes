@@ -65,11 +65,11 @@ brew upgrade standardebooks
 
 nb I tried this command and it seemed to work, it told me I already had the latest version installed
 
-## github desktop
+### github desktop (intall only)
 
 This isn't strictly necessary but it might help with authentication and viewing diffs, and I don't want to install VS code just yet.
 
-### Installation
+**Installation**:
 
 I downloaded github desktop for macbook (intel chip) from here: https://desktop.github.com/download/. This downloads a zip. You double click to extract it and then end up with the application file in the downloads folder, which you then copy to your applications folder in Finder. 
 
@@ -206,7 +206,7 @@ Now suppose you do a change directly on github:
    I did a **git pull --rebase**. This basically means (I think) that it does the remote commit first and on top of that my local commits. And those two sequential commits are now on my local machine. I still need to do a **git push** to publish the result to the remote. 
    ![image-20260326141740060](image-20260326141740060.png)
 
-## About remote and origin
+### About remote and origin
 
 see quote from geeksforgeeks article below. In my case there is one remote (the one on GitHub and my local repo is pointing to it as its origin). I can check this with the **git remote -v** command:
 
@@ -283,13 +283,23 @@ I see that it is doing fetch from origin automatically (there is also a menu com
 
 <img src="image-20260327100238796.png" alt="image-20260327100238796" style="zoom:50%;" />
 
-So the **Changed files panel** is both new (untracked) files and existing (already tracked) files that have been changed. I suppose you can use the checkboxes to select which of the files you want to include in your commit (and I suppose it will manually do the add for those). Also when you select a file it's very nice, you can see all the diffs.
 
 
+### do a commit from github desktop
 
+So the **Changed files panel** is both new (untracked) files and existing (already tracked) files that have been changed. You can use the checkboxes to select which of the files you want to include in your commit (and I suppose it will automatically do the git add for those). Also when you select a file it's very nice, you can see all the diffs.
 
+<img src="Screenshot 2026-03-27 at 10.09.15.png" alt="Screenshot 2026-03-27 at 10.09.15" style="zoom:50%;" />
 
-## Test run for the Grey Mask
+so I selected all the files, put in my commit message, and clicked **Commit 10 files to main**. After this, in the History tab I can see my new commit..
+
+![Screenshot 2026-03-27 at 10.10.33](Screenshot 2026-03-27 at 10.10.33.png)
+
+and in the **Changes** tab it tells me there are no local changes any more, and suggests I should do a push. When I clicked **Push origin,** it did the push without any trouble (no authentication prompt). And over on github I can verify that all my changes are there.
+
+![Screenshot 2026-03-27 at 10.10.52](Screenshot 2026-03-27 at 10.10.52.png)
+
+##  Standard ebooks Test run for the Grey Mask
 
 For my first production I will produce a book only for myself. I found the Grey Mask here, done by distributed proofreaders in Canada:
 
@@ -303,3 +313,60 @@ The book is published in 1929 so is out of copyright also in the US
 
 There are both html and epub versions. The instructions say to pick the one that appears most accurate. 
 In this case the epub and the html seem pretty much the same. I decided to start with the epub.
+
+### create epub skeleton for the book
+
+I will use the "without pg id" option because I am not sure of the project gutenberg id of this book (I got it from distributed proofreaders Canada)
+
+In the instructions they give the following example:
+
+```
+se create-draft --author "Robert Louis Stevenson" --title "The Strange Case of Dr. Jekyll and Mr. Hyde"
+```
+
+NB. I have a parent folder in documents called **standard-ebooks** underneath which I want to keep my ebook projects. So I will launch my command inside that folder, as it will then create the appropriate subfolder. 
+
+--> Note that if the book had a translator I would have to add that also in the create draft command
+
+```
+se create-draft --author "Patricia Wentworth" --title "The Grey Mask"
+```
+
+![image-20260327103326360](image-20260327103326360.png)
+
+And I can see in Finder that the folder containing the book skeleton is created:
+
+<img src="image-20260327103620080.png" alt="image-20260327103620080" style="zoom:50%;" />
+
+I can also see with a git status that it's created a local git repository in the book folder. 
+
+![image-20260327104457032](image-20260327104457032.png)
+
+### Add the ebook text to the skeleton (body.xhtml)
+
+The step by step says to add the html file of the book in the **src>text** folder and rename it **body.xhtml**. So from the [faded pages website](https://www.fadedpage.com/showbook.php?pid=20140339) I downloaded the zipped html of the grey mask and then expanded it to get an html file. (I am doing all this in a separate folder called source-materials.)
+
+![image-20260327110058537](image-20260327110058537.png)
+
+Then I copied the html file into the text location and renamed it body.xhtml.
+
+![image-20260327110249063](image-20260327110249063.png)
+
+### check the encoding of the body.xhtml file
+
+for this you can use the terminal command **file -I body.xhtml** 
+or **file -I src/epub/text/body.xhtml** if starting from a different location. And I see the encoding is utf-8. Otherwise, we would have had to convert.
+
+![image-20260327110610092](image-20260327110610092.png)
+
+### Do other checks on skeleton files
+
+Since I did not use the pg-id option when creating the draft, I will not have the information automatically populated. The step-by-step says:
+
+> Because Project Gutenberg ebooks are produced in different ways by different people, `se create-draft` has to make some guesses and it might guess wrong. Make sure to carefully review the data it prefills into `./src/epub/text/body.xhtml`, `./src/epub/text/colophon.xhtml`, and `./src/epub/content.opf`.
+>
+> In particular, make sure that the Project Gutenberg license is stripped from `./src/epub/text/body.xhtml`, and that the original transcribers in `./src/epub/text/colophon.xhtml` and `./src/epub/content.opf` are presented correctly.
+
+**Body:** `./src/epub/text/body.xhtml`: ok as I copied this in myself and checked the encoding. However it says to also strip the project gutenberg license.
+
+**Colophon**: `./src/epub/text/colophon.xhtml`
