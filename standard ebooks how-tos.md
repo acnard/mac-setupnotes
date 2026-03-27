@@ -165,6 +165,14 @@ Then, when after git push, when prompted for my credentials entered acnard for u
 
 This is assuming you have a repo whose origin is a remote on github and you have cloned it to the local machine using https. 
 
+### Tip: Open terminal at desired folder
+
+Navigate to the folder in Finder and then right click and select **New Terminal at Folder.**
+
+<img src="image-20260327093240547.png" alt="image-20260327093240547" style="zoom:50%;" />
+
+### making changes only on local and pushing to remote
+
 1. On your local machine, always do a **git fetch** first to retrieve any changes from the remote (especially if you work on the same repo from multiple computers)
 
 2. Then work on the files in your local folder (in this case, mac-setupnotes), updating or adding files as needed. 
@@ -182,14 +190,102 @@ This is assuming you have a repo whose origin is a remote on github and you have
 
    NOTE: The second time I did this, at least in the same terminal window, I didn't have to re-paste my github token.
 
+### making changes also on remote
+
 Now suppose you do a change directly on github: 
+
 1. You edit the file on github and then do the commit there. <img src="image-20260326135845610.png" alt="image-20260326135845610" style="zoom:33%;" />
 2. Then notice that, on local machine, if you do git status **it won't notice about the change done in the origin**. Right now it's only showing the non-commited changes I've done on the local machine. But it says the commits are up to date: 
    ![image-20260326140023245](image-20260326140023245.png)
 3. This is because you need to first to a **git fetch**. If you do that, then git status will tell you the correct situation. Basically, there is on commited change on the origin, and I need to do a git pull to update my local branch with those same changes. 
    ![image-20260326140142975](image-20260326140142975.png)
 4. But if I try to do a git pull now, it warns me that the git pull would be overwritten by my local changes to the same .md file. ![image-20260326140518442](image-20260326140518442.png)
-5. 
+5. I try to commit my local changes but then I still can't push them. I've ended up in a situation with divergent changes on local and remote. Basically, I have one commit on the remote and a different commit to the same file on local. Following these instructions
+
+   <img src="image-20260326141552633.png" alt="image-20260326141552633" style="zoom:33%;" />
+   I did a **git pull --rebase**. This basically means (I think) that it does the remote commit first and on top of that my local commits. And those two sequential commits are now on my local machine. I still need to do a **git push** to publish the result to the remote. 
+   ![image-20260326141740060](image-20260326141740060.png)
+
+## About remote and origin
+
+see quote from geeksforgeeks article below. In my case there is one remote (the one on GitHub and my local repo is pointing to it as its origin). I can check this with the **git remote -v** command:
+
+<img src="image-20260327093918283.png" alt="image-20260327093918283" style="zoom:50%;" />
+
+>  **Overview of Git and Remote Repositories**
+>
+> A [remote repository](https://www.geeksforgeeks.org/git/how-to-reset-a-git-branch-to-a-remote-repository/) in [Git](https://www.geeksforgeeks.org/git/git-tutorial/) is a version of your project that is hosted on the internet or another network. It serves as a centralized location where developers can push their changes and pull updates. This setup is important for collaborative development, ensuring all team members have access to the latest code.
+>
+> **What Does "origin" Mean in Git?**
+>
+> In Git, "origin" is a conventional name used to refer to the default remote repository where your code is stored. It is not a reserved keyword but a naming convention that Git automatically assigns when you clone a repository. Understanding "origin" helps in managing remote connections effectively. 
+>
+> **How "origin" is Automatically Created When Cloning?**
+>
+> When you clone a repository using the git clone command, Git automatically creates a remote called "origin" that points to the URL of the cloned repository. This setup saves you from manually adding the remote and ensures that you can immediately begin interacting with the remote repository.
+>
+> ```
+> git clone https://github.com/user/repository
+> ```
+
+## Github desktop - work with existing repo
+
+Now that I have the repo created and ready, I can try interacting with it using github desktop:
+
+### Add the repo to github desktop
+
+The problem is, it seems that adding an existing repository to Github desktop may create a new remote for it on GitHub? But I already have all that... 
+
+<img src="image-20260327094801716.png" alt="image-20260327094801716" style="zoom:50%;" />
+
+I asked chat gpt and got the below instructions: So I picked **Add an existing repository from the local drive** and then selected the folder **mac-setupnotes**. 
+Then I also did the check (menu > **Repository > Repostitory Settings** ) and verified the origin was correct:
+
+<img src="image-20260327095458302.png" alt="image-20260327095458302" style="zoom:50%;" />
+
+> You don’t need to create a new remote repo at all—since your project already has a GitHub remote, you just need to **add the existing local repository to GitHub Desktop**.
+>
+> Here’s how to do it:
+>
+> **Option 1: Add existing repository**
+>
+> 1. Open GitHub Desktop
+> 2. Go to **File → Add local repository…**
+> 3. Click **Choose…** and select your repo’s folder (the one with the `.git` directory)
+> 4. Click **Add repository**
+>
+> That’s it—GitHub Desktop will detect the existing Git setup, including your remote.
+>
+> **Important check (optional but recommended)**
+>
+> After adding:
+>
+> 1. Go to **Repository → Repository settings… → Remotes**
+> 2. Confirm that `origin` points to your existing GitHub repo (e.g., `https://github.com/username/repo.git`)
+>
+> ------
+>
+> **If the remote is missing (rare case)**
+>
+> If for some reason the remote isn’t there:
+>
+> ```
+> git remote add origin https://github.com/username/repo.git
+> ```
+>
+> Then GitHub Desktop will pick it up automatically
+
+### Now my repo looks like this on github desktop
+
+I see that it is doing fetch from origin automatically (there is also a menu command to fetch manually). It seems to have found the modified .md file plus six new image files.  This corresponds to what I see when I do a git status (the slight discrepancy in the screenshots is because as I am taking notes I am adding more new images to the repo! I see that whenever I add a new image, GitHub desktop automatically adds it to the list:  
+
+<img src="image-20260327095855796.png" alt="image-20260327095855796" style="zoom:50%;" />
+
+<img src="image-20260327100238796.png" alt="image-20260327100238796" style="zoom:50%;" />
+
+So the **Changed files panel** is both new (untracked) files and existing (already tracked) files that have been changed. I suppose you can use the checkboxes to select which of the files you want to include in your commit (and I suppose it will manually do the add for those). Also when you select a file it's very nice, you can see all the diffs.
+
+
 
 
 
