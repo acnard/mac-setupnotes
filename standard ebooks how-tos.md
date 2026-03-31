@@ -81,6 +81,10 @@ I didn't accept the defaults offered (the github account name and email address)
 
 <img src="image-20260326121022874.png" alt="image-20260326121022874" style="zoom:33%;" />
 
+### code editor
+
+I also installed Cotedit from the apple store. This is needed when you later want to edit the various ebook files. (You could use typora in source mode but it's not really a code editor and lacks the needed features, eg show invisible characters etc.)
+
 ## new repository for testing
 
 I will do this on the command line, not using github desktop, to review my knowledge.
@@ -359,7 +363,7 @@ or **file -I src/epub/text/body.xhtml** if starting from a different location. A
 
 ![image-20260327110610092](image-20260327110610092.png)
 
-### Do other checks on skeleton files
+### Do other checks on skeleton files (pre first commit)
 
 Since I did not use the pg-id option when creating the draft, I will not have the information automatically populated. The step-by-step says:
 
@@ -367,6 +371,150 @@ Since I did not use the pg-id option when creating the draft, I will not have th
 >
 > In particular, make sure that the Project Gutenberg license is stripped from `./src/epub/text/body.xhtml`, and that the original transcribers in `./src/epub/text/colophon.xhtml` and `./src/epub/content.opf` are presented correctly.
 
-**Body:** `./src/epub/text/body.xhtml`: ok as I copied this in myself and checked the encoding. However it says to also strip the project gutenberg license.
-
 **Colophon**: `./src/epub/text/colophon.xhtml`
+
+I wasn't sure how to fil in these, I put in just a few things like the book's publication year (1929) and the transcriber info (dp canada) and the page scan source info.
+
+**Content.opf** I also had no idea how to fill in all this metadata so for now I just left it as is.
+
+**Body:** `./src/epub/text/body.xhtml`: ok as I copied this in myself and checked the encoding. However it says to also strip the header markup, project gutenberg license, and work title, any in-text TOCs, and anything after the public domain text ends. See instructions pasted below. 
+
+So, I decided to remove everything in-between the <head> tags :
+
+![image-20260331114025425](image-20260331114025425.png)
+
+And then at the beginning of the file <body> some more text unrelated to the actual public domain text of the book.
+
+![image-20260331114340707](image-20260331114340707.png)
+
+So that I ended up with a file that starts like this. I don't know if I should also altogether have removed the other html file tags at the top (ie to have the file start directly with <h1> chapter 1, which is what it shows in the step-by-step example)
+
+![image-20260331114451276](image-20260331114451276.png)
+
+From the end of the file, as per instructions, I removed "The end" and the transcriber's notes. But I left in the closing <body> and <html> tags as I had left in the opening ones
+
+![image-20260331114622936](image-20260331114622936.png)
+
+> Now that we’ve got the source text, we have to do some very broad cleanup before we perform our first commit:
+>
+> - Remove the header markup and everything, including any Gutenberg text and the work title, up to the beginning of the actual public domain text. We’ll add our own header markup to replace what we’ve removed later.
+>
+>   *Jekyll* doesn’t include front matter like an epigraph or introduction; if it did, that sort of stuff would be left in, since it’s part of the main text.
+>
+> - This edition of *Jekyll* includes a table of contents *within the body text*; remove that too. S.E. ebooks place the ToC in a separate file outside of the body text, where it can be displayed by the ereader software via UI elements.
+>
+> - Remove any footer text (e.g. “The End”), as well as any markup after the public domain text ends. This includes the Gutenberg license—but don’t worry, we’ll credit Gutenberg in the colophon and metadata later. If you invoked `se create-draft` with the `--pg-id` option, then it may have already stripped the license for you and included some Gutenberg metadata.
+
+### initial commit
+
+now that I have done the rough cleanup I am ready for the initial commit. At present I still have only the local repo, so I will do this from the command line:
+
+So first I did a `git add -A`: 
+![image-20260331115233523](image-20260331115233523.png)
+
+Followed by a `git commit -m "Initial commit"`
+![image-20260331115412942](image-20260331115412942.png)
+
+### Split the source text
+
+Now we want to split the source file at logical divisions (in our case, chapters).
+
+We will do this with a standard ebooks command that works as follows.
+
+> To split the work, we use `se split-file`. `se split-file` takes a single file and breaks it in to a new file every time it encounters the markup `<!--se:split-->`.
+
+For this to work, we must first insert `<!--se:split-->` at the appropriate points of the source file.  In this particular book, each chapter is enclosed in `<div>` and `<h1>` tags. And apart from these chapter headings, there are no other div or heading tags in the file. 
+
+![image-20260331121905524](image-20260331121905524.png)
+
+In COTedit we can achieve the insertion of the splitter tag at each chapter using the find and replace function (remember to do it all in one go with replace all, otherwise you will get duplicate splitter tags:
+
+![image-20260331122236936](image-20260331122236936.png)
+
+Now we can run the splitter command
+
+```
+se split-file src/epub/text/body.xhtml
+```
+
+The result is a bunch of chapter files which it places directly in the book folder (where we ran the command). 
+
+![image-20260331123010201](image-20260331123010201.png)
+
+But what happened is there are 46 files (even though we had 45 chapters), this is because I left in the opening html tags etc. So I end up with a chapter 1 file that contains just some tags, and then the actual chapter 1 is in the file named chapter 2, and so on. 
+
+This is no good, so I'll delete all these chapter files, re-clean up my body file, and try again.
+
+So now I'll remove all the html tags as well from the beginning and end of the body file, so that  it really just starts directly with chapter 1.
+
+![image-20260331123353629](image-20260331123353629.png)
+
+I still have the splitter tags in the body file so I can just run the command again, and this time I get the correct 45 chapter files. Now we can move those 45 files into the **src>epub>text** folder and remove the body file from there. 
+
+(NB on mac press command while dragging to do a move operation)
+
+Now each chapter file looks like this, you can see it's added the html and body tags back again, as also a section tag that encloses each chapter.  
+![image-20260331124942486](image-20260331124942486.png)
+
+I did another commit here, before further cleanup. with the message "split body into chapters"
+
+### clean up of chapter files
+
+Now I can run the `se -clean` command. Though I am not sure that it'll take care of the fact that I have `<h1>` headings in each chapter file: According to the style guide, they should be h2 because each level has to make sense in the overall structure of the book, and only the book title is h1:
+
+![image-20260331131401522](image-20260331131401522.png)
+
+We can run the se -clean command from the root directory of our book, and pass it a dot as the argument: 
+
+```
+se clean .
+```
+
+I can see from the result that the clean command didn't fix my headers, so I'll do a search and replace in each file so that each chapter is enclosed in <h2> tags, without the extraneous divs. (NB it would've been easier do this before splitting)
+![image-20260331131738083](image-20260331131738083.png)
+
+Then after running se clean and doing the manual fix of the h2 headings in all the files, I did another commit, "clean and fix h2 headings"
+
+### add  local repo to gh desktop and publish to GitHub
+
+Now I want to try working with this repo (which only exists locally) on github desktop. 
+
+I used the command File> Add local repository and then selected the folder of the miss silver book. 
+
+![image-20260331141149324](image-20260331141149324.png)
+
+After doing this, I can work with this local repo in the usual way (view the commit history, etc) and it also offers to publish it to github, which I did. 
+
+![image-20260331141759111](image-20260331141759111.png)
+
+And that's it. When I go look, the repo is present in my github account. 
+
+And here is my commit history so far:
+
+![image-20260331142238022](image-20260331142238022.png)
+
+### Typogrify
+
+Next, in the root directory of the ebook, we run the **typogrify** command (the dot argument is because you are already in the required folder). This will, among other things, convert straight quotes to curly quotes.
+
+```
+se typogrify .
+```
+
+and right after this a commit 
+
+```
+git add -A
+git commit -m "Typogrify"
+```
+
+The result of this seems mainly changes to do with hyphens and dashes, and adding periods to abbreviations like Mr and Mrs. But it didn't touch the quotes because my book has English style quotes (dialogue enclosed in single quotation marks). To fix this I need to run a separate command:
+
+### Convert British to American quotations
+
+This script attempts to convert british (single) quotations to American (double) ones. The text must already be typogrified for this script to work.
+
+```
+se british2american .
+```
+
