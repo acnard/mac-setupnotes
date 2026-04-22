@@ -518,3 +518,82 @@ This script attempts to convert british (single) quotations to American (double)
 se british2american .
 ```
 
+Now I have double quotes instead of the single ones.
+
+### Semanticate (with tool)
+
+the text has various semantics to fix. The chapter titles, italics, etc. But first we'll see what the automated tool does. 
+
+So we run:
+
+```
+se semanticate .
+```
+
+Then using github desktop we check the diffs to see what it's done. I see things like: 
+
+- Most of what it's done is the semanticize the standard abbreviations (Mr., Mrs., No.)![image-20260422165143625](image-20260422165143625.png)
+
+- it's also semanticized the roman numerals in chapter headings, but this will need to be fixed because the chapter headings actually ought to be without the word Chapter and without the span tag, like this: `<h2 epub:type="ordinal z3998:roman">II</h2>` 
+  ![image-20260422165355761](image-20260422165355761.png)
+
+- In chapter 45 it did V.C. wrong: 
+  ![image-20260422184248634](image-20260422184248634.png)
+
+- And in chapter 26 it seems to have got this wrong, since the initials are of somebody's name (not a point of the compass): 
+
+  ![image-20260422182935224](image-20260422182935224.png)
+
+  Maybe something like this? `<p epub:type="z3998:signature"><abbr epub:type="z3998:personal-name">A. A. C.</abbr></p>`
+
+Other things semanticate has not fixed, and which will also need to be corrected manually, are:
+
+- **All the italics:** it has not corrected the italics which are still like this:  `I <span class="it">can’t</span> think how they breathed.` 
+
+- In chapter 27 someone sings a snippet of a song: 
+
+  ![image-20260422183517604](image-20260422183517604.png)
+
+other doubts: 
+
+Is this correct for **Mr. St. Andrade**?
+
+`<abbr epub:type="z3998:name-title">Mr.</abbr> <abbr epub:type="z3998:name-title">St.</abbr> Andrade is a Brazilian millionaire⁠—that is, he made his money in Brazil.`
+
+NOTE: I did the semanticate commit without fixing anything because the automated part must have its separate commit
+
+### Fix chapter titles
+
+The next manual fix is to get the chapter headings right. 
+
+Currently my chapter headings are like this: 
+
+```
+<h2>Chapter <span epub:type="z3998:roman">III</span></h2>
+```
+
+And I need them to instead look like this ("sections with ordinals but without titles"): 
+
+```
+<h2 epub:type="ordinal z3998:roman">III</h2>
+```
+
+So I could do: 
+
+Find: `<h2>Chapter <span epub:type="z3998:roman">(.*?)</span></h2>`
+
+Replace  `<h2 epub:type="ordinal z3998:roman">$1</h2>`
+
+This worked in Cotedit (the $1 backreferences the capture group in parentheses). 
+
+![image-20260422195622310](image-20260422195622310.png)
+
+
+
+There is an interactive replace command in the se toolset that you can use (cotedit does not support multi-file search and replace), example:
+
+```
+se interactive-replace "\b([Ss])ome one" "\1omeone" src/epub/text/*
+```
+
+but here it looks like they use **\1** to backreference the capture group
