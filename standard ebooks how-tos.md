@@ -172,6 +172,7 @@ This is assuming you have a repo whose origin is a remote on github and you have
 ### Tip: Open terminal at desired folder
 
 Navigate to the folder in Finder and then right click and select **New Terminal at Folder.**
+(Note that later--possibly after an updated--this menu action is nested under **Services**)
 
 <img src="image-20260327093240547.png" alt="image-20260327093240547" style="zoom:50%;" />
 
@@ -597,3 +598,36 @@ se interactive-replace "\b([Ss])ome one" "\1omeone" src/epub/text/*
 ```
 
 but here it looks like they use **\1** to backreference the capture group
+
+#### grep with BB edit
+
+I installed BB edit because of its more powerful multi file editing capabilities and tried the regular expression search and replace there:
+
+![image-20260423123124756](image-20260423123124756.png)
+
+it worked! Then I tried the multi-file version (you can pick a folder, or choose to operate only on the currently open files), and that also worked.
+
+With this method I did up to chapter 12. 
+
+#### interactive search and replace
+
+you can pass the tool the string to find, followed by the string to replace, followed by the folder in which to operate (the path is relative to the main book folder). Then type **y** to accept the replacement or **n** to reject it.
+
+```
+se interactive-replace "<h2>Chapter <span epub:type="z3998:roman">(.*?)</span></h2>" "<h2 epub:type="ordinal z3998:roman">\1</h2>" src/epub/text/*
+```
+
+Now this didn't work because my find and replace strings themselves contain double quotes ("), so I tried enclosing them in single quotes.
+
+```
+se interactive-replace '<h2>Chapter <span epub:type="z3998:roman">(.*?)</span></h2>' '<h2 epub:type="ordinal z3998:roman">\1</h2>' src/epub/text/*
+```
+
+And that worked. The tool shows you the string it's going to replace but not what the proposed replacement will look like. Anyway I checked in BB edit and it was all correct. 
+
+At this point I did a commit for "Fix chapter headings"
+
+### Fix incorrect semantics on V.C and E.S.
+
+I tried but failed to come up with a search pattern that would find the <abbr> tag only when NOT followed by Mr, Mrs, or No.
+
