@@ -627,7 +627,70 @@ And that worked. The tool shows you the string it's going to replace but not wha
 
 At this point I did a commit for "Fix chapter headings"
 
-### Fix incorrect semantics on V.C and E.S.
+### Fix abbreviations (manual)
 
-I tried but failed to come up with a search pattern that would find the <abbr> tag only when NOT followed by Mr, Mrs, or No.
+Semanticate correctly tagged the abbreviations **Mr.** **Mrs.** and **No.** 
+
+for Mr. and Mrs. the pattern is: `<abbr epub:type="z3998:name-title">Mrs.</abbr>` , while for No. you just enclose in abbr tags
+
+In BB edit I ran a multi-file search on all source text files for closing abbreviation tags NOT preceded by Mr. or Mrs and found 14 occurrences to check manually. When I also added No. to the exclusions the hits were just 10. 
+![image-20260425155151648](image-20260425155151648.png)
+
+I went through them and they were as follows: 
+
+- `<abbr epub:type="z3998:name-title">Mme.</abbr> Mardon’s.`  (this is correct as-is since Mme. is also a name-title)
+- `<abbr epub:type="z3998:name-title">St.</abbr> Justin` (this is also correct)
+- `<abbr epub:type="z3998:name-title">Mr.</abbr> <abbr epub:type="z3998:name-title">St.</abbr> Andrade is a Brazilian millionaire` (I think this is also correct)
+- `Who was <abbr epub:type="se:compass z3998:initialism">E.S.</abbr>` --> this one needs to be fixed, as E.S. are the initials of a person it ought to be `<abbr epub:type="z3998:personal-name">E. S.</abbr>` (the initials are also separated by spaces) 
+  note that when E. S. occurs at the end of a clause it also needs the "eoc" like this: `<abbr class="eoc" epub:type="z3998:given-name">R. A.</abbr>`, and then we eliminate the second period to avoid consecutive periods.
+
+I fixed all the E. S. abbreviations, but in doing so I also noticed that there were a few other initialisms/abbreviations that were not tagged at all. So (since in my starting text these initialisms are not separated by spaces) I did another multi-file search for any two capital letters separated by a period: 
+
+`[A-Z]\.[A-Z]`
+
+It found 10 instances, all of these either M.E.B., E.B,. or B.M.E. 
+
+To all of these I added the appropriate tags, as in: `<abbr epub:type="z3998:personal-name">E. S.</abbr>` and also inserted the spaces. 
+
+Then I did another commit, for manual fixes to abbreviations.
+
+### Fix italics
+
+Throughout the book, italic text is set of with span tags like this:  `<span class="it">who</span>`
+
+A multi-file search for this pattern found 264 occurrences! I went through each file and did a replace of all the occurrences where `<em>` was appropriate (most of them), and left the others with the span tag. 
+
+At that point, repeating a multi-file search for the span class it tag found only 19 occurrences to deal with. 
+
+First, I did a commit of my fixes for the em italics.
+
+The remaining instances to fix were: 
+
+- Way Down Upon the Swanee River : this is a song title, according to the style guide it should be quoted, not italicized. And for the semantics I can use "se:name.music.song". the semantic span tag goes *inside* the quotes: `Lattery, the caretaker, crossed the lighted space whistling “<span epub:type="se:name.music.song">Way Down Upon the Swanee River</span>”. He whistled flat.`
+- `Miss Standing frowned at the word <span class="it">appalling</span>, which she had written with one p and two l’s.` : according to style guide, words used as words like this must be quoted
+- Tracts for Tiny Tots: This sounds like it is a book, and so has to be italicized, in addition to the appropriate semantics in the italics tag: `<p>He read <i epub:type="se:name.publication.book">Candide</i> while having a pint at the King’s Head.</p>`
+- I propose that we should wash out the <em>episode</em> and revert to the <span class="it">status quo ante</span>: "stauts quo ante" is in the merriam webster and so should not be italicized. 
+- [TODO ADD ACCENT] Touche: this is not italicized because the word touché is in the merriam webster (nb insert the accent later as an editorial commit)
+- I don’t mind being all alone when I’m all alone with you: This is a song title so it is quoted and tagged as above. NB the tag is ok but since the song is being mentioned by someone, we would end up with quotes inside quotes...So in this case I will quote the song title with single quotation marks.
+- pension: as in the french word for guest-house. This is in merriam-webster so I guess not italicized and no language semantics.
+- Evening Gossip. This is a newspaper, so we can italicize it with `<i epub:type="se:name.publication.newspaper">`
+- Moonlight and You. This is a waltz so we need to quote it and add `<span epub:type="se:name.music.song">`
+- [TODO ADD PERIOD?] ibid. This does not need to be italicized. But in the source there is no dot at the end of it (ibid. is an abbreviation that appears with dot in dictionary)
+- dossier. Also in dictionary so no italics.
+- He barked at me and said "*Who was that?*" I decided to leave this as emphasis. 
+- enfant terrible. This is also in the dictionary.
+- The Times. A newspaper so use `<i epub:type="se:name.publication.newspaper">`
+- [TODO CORRECT PUNCTUATION OF MUSICAL TITLE?] Misquotation from Oh Kay: Oh, Kay! is a musical, so we can use `<i epub:type="se:name.publication.play">`
+- pour le bon mofit. This is an entire french phrase not in the dictionary. It needs to be italicized as in the example: `<i xml:lang="fr">mon petit chou</i>` 
+- poste restante. is in the dictionary
+
+When titles of songs etc are quoted and not italicized, they still need the semantics, eg: 
+
+```
+<p>If Edgar Allen Poe had put her into “<span epub:type="se:name.publication.short-story">The Fall of the House of Usher</span>,” she would have fitted it like the paper on the wall.</p>
+```
+
+I did another commit with these non-em fixes pertaining to italics. 
+
+
 
